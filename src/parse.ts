@@ -136,7 +136,7 @@ export function parse(toml: string, { maxDepth = 1000, integersAsBigInt }: Parse
 			if (isTableArray) {
 				if (toml[k[1] - 1] !== ']') {
 					throw new TomlError('expected end of table declaration', {
-						toml: toml,
+						toml,
 						ptr: k[1] - 1,
 					})
 				}
@@ -146,10 +146,7 @@ export function parse(toml: string, { maxDepth = 1000, integersAsBigInt }: Parse
 
 			let p = peekTable(k[0], res, meta, isTableArray ? Type.ARRAY : Type.EXPLICIT)
 			if (!p) {
-				throw new TomlError('trying to redefine an already defined table or value', {
-					toml: toml,
-					ptr: ptr,
-				})
+				throw new TomlError('trying to redefine an already defined table or value', { toml, ptr })
 			}
 
 			m = p[2]
@@ -159,10 +156,7 @@ export function parse(toml: string, { maxDepth = 1000, integersAsBigInt }: Parse
 			let k = parseKey(toml, ptr)
 			let p = peekTable(k[0], tbl, m, Type.DOTTED)
 			if (!p) {
-				throw new TomlError('trying to redefine an already defined table or value', {
-					toml: toml,
-					ptr: ptr,
-				})
+				throw new TomlError('trying to redefine an already defined table or value', { toml, ptr })
 			}
 
 			let v = extractValue(toml, k[1], void 0, maxDepth, integersAsBigInt)
@@ -172,10 +166,7 @@ export function parse(toml: string, { maxDepth = 1000, integersAsBigInt }: Parse
 
 		ptr = skipVoid(toml, ptr, true)
 		if (toml[ptr] && toml[ptr] !== '\n' && toml[ptr] !== '\r') {
-			throw new TomlError('each key-value declaration must be followed by an end-of-line', {
-				toml: toml,
-				ptr: ptr,
-			})
+			throw new TomlError('each key-value declaration must be followed by an end-of-line', { toml, ptr })
 		}
 		ptr = skipVoid(toml, ptr)
 	}
